@@ -4,6 +4,7 @@
 
 import json
 import os
+from dotenv import load_dotenv
 
 import time
 
@@ -12,7 +13,11 @@ from discord import channel
 from discord.ext import commands
 from discord.ext.commands.core import has_permissions, has_role
 
-token = "MTExODYyOTk0NDk2NTIwNjA4Nw.GKUIsp.DWE9IhCV0EjBOXEyGRiiIM5pvQl6gP0p2M03F8"
+load_dotenv(dotenv_path="token.env")
+
+token = os.getenv("TOKEN")
+if token:
+  print("Token found")
 
 intents = discord.Intents.all()
 client = commands.Bot()
@@ -89,6 +94,30 @@ async def kick(ctx, user: discord.Member, *, reason=None):
   await user.send(f"You have been kicked from {ctx.guild.name}. Reason: {reason}")
   await user.kick(reason=reason)
   await ctx.respond(f"{user} has been kicked")
+
+@client.slash_command(
+  name="addrole",
+  description="Add a role to a user",
+  guild_ids=[928008543305629768]
+)
+@has_permissions(manage_roles=True)
+async def addrole(ctx, user: discord.Member, role: discord.Role):
+  await user.add_roles(role)
+  await ctx.respond(f"Added {role} to {user}")
+  if user.top_role.position > ctx.author.top_role.position:
+    await ctx.respond("You cannot add a role higher than your own")
+
+@client.slash_command(
+  name="removerole",
+  description="Remove a role from a user",
+  guild_ids=[928008543305629768]
+)
+@has_permissions(manage_roles=True)
+async def removerole(ctx, user: discord.Member, role: discord.Role):
+  await user.remove_roles(role)
+  await ctx.respond(f"Removed {role} from {user}")
+  if user.top_role.position > ctx.author.top_role.position:
+    await ctx.respond("You cannot remove a role higher than your own")
   
   
 
