@@ -13,7 +13,7 @@ from discord import channel
 from discord.ext import commands
 from discord.ext.commands.core import has_permissions, has_role
 
-load_dotenv(dotenv_path="token.env")
+load_dotenv(dotenv_path="D:/token.env")
 
 token = os.getenv("TOKEN")
 if token:
