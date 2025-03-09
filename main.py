@@ -12,6 +12,10 @@ import discord
 from discord import channel
 from discord.ext import commands
 from discord.ext.commands.core import has_permissions, has_role
+import discord.utils
+from discord.utils import get
+
+serverID = 928008543305629768
 
 load_dotenv(dotenv_path="D:/token.env")
 
@@ -34,7 +38,7 @@ async def on_ready():
 @client.slash_command(
 name="ping",
 description="Check the bot's latency",
-guild_ids=[928008543305629768]
+guild_ids=[serverID]
 )
 async def ping(ctx):
   await ctx.respond(f"Pong! {round(client.latency * 1000)}ms")
@@ -42,7 +46,7 @@ async def ping(ctx):
 @client.slash_command(
   name="ban",
   description="Ban a user",
-  guild_ids=[928008543305629768]
+  guild_ids=[serverID]
 )
 @has_permissions(ban_members=True)
 async def ban(ctx, user: discord.Member, *, reason=None):
@@ -54,7 +58,7 @@ async def ban(ctx, user: discord.Member, *, reason=None):
 @client.slash_command(
   name="dm",
   description="DM a user",
-  guild_ids=[928008543305629768]
+  guild_ids=[serverID]
 )
 @has_role("Developers")
 async def dm(ctx, user: discord.Member, *, message):
@@ -64,7 +68,7 @@ async def dm(ctx, user: discord.Member, *, message):
 @client.slash_command(
   name="purge",
   description="Delete messages",
-  guild_ids=[928008543305629768]
+  guild_ids=[serverID]
 )
 @has_permissions(manage_messages=True)
 async def purge(ctx, amount: int):
@@ -76,7 +80,7 @@ async def purge(ctx, amount: int):
 @client.slash_command(
   name="unban",
   description="Unban a user",
-  guild_ids=[928008543305629768]
+  guild_ids=[serverID]
 )
 @has_permissions(ban_members=True)
 async def unban(ctx, user: discord.User):
@@ -86,7 +90,7 @@ async def unban(ctx, user: discord.User):
 @client.slash_command(
   name="kick",
   description="Kick a user",
-  guild_ids=[928008543305629768]
+  guild_ids=[serverID]
 )
 @has_permissions(kick_members=True)
 async def kick(ctx, user: discord.Member, *, reason=None):
@@ -98,28 +102,58 @@ async def kick(ctx, user: discord.Member, *, reason=None):
 @client.slash_command(
   name="addrole",
   description="Add a role to a user",
-  guild_ids=[928008543305629768]
+  guild_ids=[serverID]
 )
 @has_permissions(manage_roles=True)
 async def addrole(ctx, user: discord.Member, role: discord.Role):
+  if user.top_role.position > ctx.author.top_role.position:
+    await ctx.respond("You cannot add a role higher than or equal to your own")
   await user.add_roles(role)
   await ctx.respond(f"Added {role} to {user}")
-  if user.top_role.position > ctx.author.top_role.position:
-    await ctx.respond("You cannot add a role higher than your own")
 
 @client.slash_command(
   name="removerole",
   description="Remove a role from a user",
-  guild_ids=[928008543305629768]
+  guild_ids=[serverID]
 )
 @has_permissions(manage_roles=True)
 async def removerole(ctx, user: discord.Member, role: discord.Role):
+  if user.top_role.position > ctx.author.top_role.position:
+    await ctx.respond("You cannot remove a role higher than or equal to your own")
   await user.remove_roles(role)
   await ctx.respond(f"Removed {role} from {user}")
-  if user.top_role.position > ctx.author.top_role.position:
-    await ctx.respond("You cannot remove a role higher than your own")
-  
-  
 
+@client.slash_command(
+  name="arrest",
+  description="Arrest a user",
+  guild_ids=[serverID]
+)
+@has_permissions(manage_roles=True)
+async def arrest(ctx, user: discord.Member):
+  if ctx.author.top_role.position <= user.top_role.position:
+    await ctx.respond("You cannot arrest a user with a role higher than or equal to than you")
+  guild = user.guild
+  sRoles = guild.roles
+  jailed = sRoles[10]
+  await user.edit(roles=[])
+  await user.add_roles(jailed)
+  await user.move_to(None)
+  await ctx.respond(f"{user} has been arrested")
 
+@client.slash_command(
+  name="parole",
+  description="Parole a user",
+  guild_ids=[serverID]
+)
+@has_permissions(manage_roles=True)
+async def parole(ctx, user: discord.Member):
+  if ctx.author.top_role.position <= user.top_role.position:
+    await ctx.respond("You cannot arrest a user with a role higher than or equal to than you")
+  guild = user.guild
+  sRoles = guild.roles
+  jailed = sRoles[10]
+  await user.remove_roles(jailed)
+  await user.add_roles(sRoles[20])
+  await ctx.respond(f"{user} has been paroled")
+  
 client.run(token)
