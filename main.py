@@ -41,10 +41,10 @@ description="Check the bot's latency",
 guild_ids=[serverID]
 )
 async def ping(ctx):
-  await ctx.respond(f"Pong! {round(client.latency * 1000)}ms")
+  await ctx.respond(f"Pong! ({round(client.latency * 1000)}ms)")
 
 @client.slash_command(
-  name="ban",
+  name="execute",
   description="Ban a user",
   guild_ids=[serverID]
 )
@@ -78,17 +78,17 @@ async def purge(ctx, amount: int):
   await ctx.channel.purge(limit=1)
 
 @client.slash_command(
-  name="unban",
+  name="revive",
   description="Unban a user",
   guild_ids=[serverID]
 )
 @has_permissions(ban_members=True)
 async def unban(ctx, user: discord.User):
   await ctx.guild.unban(user)
-  await ctx.respond(f"Unbanned {user}")
+  await ctx.respond(f"Revived {user}")
 
 @client.slash_command(
-  name="kick",
+  name="exile",
   description="Kick a user",
   guild_ids=[serverID]
 )
@@ -100,7 +100,7 @@ async def kick(ctx, user: discord.Member, *, reason=None):
   await ctx.respond(f"{user} has been kicked")
 
 @client.slash_command(
-  name="addrole",
+  name="gib",
   description="Add a role to a user",
   guild_ids=[serverID]
 )
@@ -112,7 +112,7 @@ async def addrole(ctx, user: discord.Member, role: discord.Role):
   await ctx.respond(f"Added {role} to {user}")
 
 @client.slash_command(
-  name="removerole",
+  name="ungib",
   description="Remove a role from a user",
   guild_ids=[serverID]
 )
