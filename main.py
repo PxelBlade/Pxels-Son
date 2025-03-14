@@ -1,7 +1,3 @@
-# Yes, I am aware that this is open source
-# This is supposed to be an exclusive bot
-# You can fork and customize, but DO NOT USE THIS TO IMPERSONATE ME
-
 import json
 import os
 from dotenv import load_dotenv
@@ -15,9 +11,14 @@ from discord.ext.commands.core import has_permissions, has_role
 import discord.utils
 from discord.utils import get
 
+#Replace with your own server's ID
 serverID = 928008543305629768
 
-load_dotenv(dotenv_path="D:/token.env")
+#TEMPLATES FOR FILEPATH:
+#("Folder" is there to show you how to add a folder to the path)
+#Windows: C:\Folder\token.env
+#Linux & Mac: ~/Folder/token.env
+load_dotenv(dotenv_path="~/token.env")
 
 token = os.getenv("TOKEN")
 if token:
@@ -134,10 +135,13 @@ async def arrest(ctx, user: discord.Member):
     await ctx.respond("You cannot arrest a user with a role higher than or equal to than you")
   guild = user.guild
   sRoles = guild.roles
-  jailed = sRoles[10]
+  for i in sRoles:
+    if i == "Jailed":
+      jailed = i
+      break
   await user.edit(roles=[])
   await user.add_roles(jailed)
-  await user.move_to(None)
+  await user.move_to(None) #Kicks from VC (This is the only thing I find confusing to code)
   await ctx.respond(f"{user} has been arrested")
 
 @client.slash_command(
