@@ -42,7 +42,7 @@ description="Check the bot's latency",
 guild_ids=[serverID]
 )
 async def ping(ctx):
-  await ctx.respond(f"Pong! ({round(client.latency * 1000)}ms)")
+  await ctx.respond(f"Pong! ({round(client.latency * 1000)}ms). HOLY SHIT I HAVE THE FASTEST REACTION TIME IN THE WORLD")
 
 @client.slash_command(
   name="execute",
