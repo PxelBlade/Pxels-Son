@@ -18,7 +18,7 @@ serverID = 928008543305629768
 #("Folder" is there to show you how to add a folder to the path)
 #Windows: C:\Folder\token.env
 #Linux & Mac: ~/Folder/token.env
-load_dotenv(dotenv_path="~/token.env")
+load_dotenv(dotenv_path="E:/key.env")
 
 token = os.getenv("TOKEN")
 if token:
@@ -135,10 +135,14 @@ async def arrest(ctx, user: discord.Member):
     await ctx.respond("You cannot arrest a user with a role higher than or equal to than you")
   guild = user.guild
   sRoles = guild.roles
+  jailed = None
   for i in sRoles:
-    if i == "Jailed":
+    if i.name == "Jailed":
       jailed = i
       break
+  if jailed is None:
+    await ctx.respond("The 'Jailed' role does not exist.")
+    return
   await user.edit(roles=[])
   await user.add_roles(jailed)
   await user.move_to(None) #Kicks from VC (This is the only thing I find confusing to code)
