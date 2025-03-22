@@ -193,7 +193,7 @@ async def ticket(ctx):
 @has_role("Higher Rank")
 async def point_request(ctx, amount: int, reason: str):
    await owner.send(f"``{ctx.author}`` has requested the addition of ``{amount}`` points for ``{reason}``.") # type: ignore
-   await ctx.respond(f"Your point request has been submitted successfully!", ephemeral=True)  
+   await ctx.respond(f"Your point request has been submitted successfully!", ephemeral=True)  #apeofk
    
    
 
