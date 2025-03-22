@@ -13,6 +13,7 @@ from discord import CategoryChannel
 
 #Replace with your own server's ID
 serverID = 928008543305629768
+ownerID = 1117117776176357386
 
 #TEMPLATES FOR FILEPATH:
 #("Folder" is there to show you how to add a folder to the path)
@@ -27,8 +28,12 @@ if token:
 intents = discord.Intents.all()
 client = commands.Bot(command_prefix="$", intents=intents)
 
+owner = None
+
 @client.event
 async def on_ready():
+  global owner
+  owner = await client.fetch_user(int(ownerID))
   print("Bot is ready")
 
 @client.slash_command(
@@ -181,18 +186,15 @@ async def ticket(ctx):
     await ticketChannel.send(f"{ticketer.mention} wake the fuck up {ctx.author} made a ticket")
 
 @client.slash_command(
-      name="clear_tickets",
-      description="clear all active tickets",
-      guild_ids=[serverID]
+   name="point_request",
+   description="Sends a request to get quota points",
+   guild_ids=[serverID]
 )
-@has_permissions(manage_messages=True)
-async def clear_tickets(ctx):
-   guild = ctx.guild
-   category = CategoryChannel
-   cChannels = category.channels
-   if category is None:
-      await ctx.respond("The 'Tickets' category does not exist")
-      return
+@has_role("Higher Rank")
+async def point_request(ctx, amount: int, reason: str):
+   await owner.send(f"``{ctx.author}`` has requested the addition of ``{amount}`` points for ``{reason}``.") # type: ignore
+   await ctx.respond(f"Your point request has been submitted successfully!", ephemeral=True)  
+   
    
 
 
