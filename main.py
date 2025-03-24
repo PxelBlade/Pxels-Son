@@ -18,14 +18,14 @@ serverID = 928008543305629768
 #("Folder" is there to show you how to add a folder to the path)
 #Windows: C:\Folder\token.env
 #Linux & Mac: ~/Folder/token.env
-load_dotenv(dotenv_path="E:/key.env")
+load_dotenv(dotenv_path="C:/Users/charl/AuthKeys/key.env")
 
 token = os.getenv("TOKEN")
 if token:
   print("Token found")
 
 intents = discord.Intents.all()
-client = commands.Bot()
+client = commands.Bot(command_prefix="$",intents=intents)
 
 
 @client.event
