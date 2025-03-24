@@ -26,7 +26,7 @@ if token:
   print("Token found")
 
 intents = discord.Intents.all()
-client = commands.Bot(command_prefix="$",intents=intents)
+client = commands.Bot(intents=intents)
 
 owner = None
 
