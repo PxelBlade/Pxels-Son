@@ -19,22 +19,14 @@ ownerID = 1117117776176357386
 #("Folder" is there to show you how to add a folder to the path)
 #Windows: C:\Folder\token.env
 #Linux & Mac: ~/Folder/token.env
-<<<<<<< HEAD
 load_dotenv(dotenv_path="C:/Users/charl/AuthKeys/key.env")
-=======
-load_dotenv(dotenv_path="D:/token.env")
->>>>>>> e8dfd8abaf798f93530d2a516e094b20665e3bdb
 
 token = os.getenv("TOKEN")
 if token:
   print("Token found")
 
 intents = discord.Intents.all()
-<<<<<<< HEAD
 client = commands.Bot(command_prefix="$",intents=intents)
-=======
-client = commands.Bot(command_prefix="$", intents=intents)
->>>>>>> e8dfd8abaf798f93530d2a516e094b20665e3bdb
 
 owner = None
 
@@ -200,8 +192,8 @@ async def ticket(ctx):
 )
 @has_role("Higher Rank")
 async def point_request(ctx, amount: int, reason: str):
-   await owner.send(f"``{ctx.author}`` has requested the addition of ``{amount}`` points for ``{reason}``.") # type: ignore
-   await ctx.respond(f"Your point request has been submitted successfully!", ephemeral=True)  #apeofk
+   await owner.send(f"``{ctx.author}`` has requested the addition of ``{amount}`` points for ``{reason}``.") #type: ignore
+   await ctx.respond(f"Your point request has been submitted successfully!", ephemeral=True)
    
    
 
