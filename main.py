@@ -99,10 +99,11 @@ async def kick(ctx, user: discord.Member, *, reason=None):
  )
 @has_permissions(manage_roles=True)
 async def addrole(ctx, user: discord.Member, role: discord.Role):
-   if user.top_role.position > ctx.author.top_role.position:
+   if role.position > ctx.author.top_role.position:
      await ctx.respond("You cannot add a role higher than or equal to your own")
-   await user.add_roles(role)
-   await ctx.respond(f"Added {role} to {user}")
+   else:
+      await user.add_roles(role)
+      await ctx.respond(f"Added {role} to {user}", ephemeral=True)
  
 @client.slash_command(
    name="ungib",
@@ -111,10 +112,11 @@ async def addrole(ctx, user: discord.Member, role: discord.Role):
  )
 @has_permissions(manage_roles=True)
 async def removerole(ctx, user: discord.Member, role: discord.Role):
-   if user.top_role.position > ctx.author.top_role.position:
+   if role.position > ctx.author.top_role.position:
      await ctx.respond("You cannot remove a role higher than or equal to your own")
-   await user.remove_roles(role)
-   await ctx.respond(f"Removed {role} from {user}")
+   else:
+      await user.remove_roles(role)
+      await ctx.respond(f"Removed {role} from {user}", ephemeral=True)
  
 @client.slash_command(
    name="arrest",
