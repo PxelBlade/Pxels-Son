@@ -10,10 +10,13 @@ from discord.ext.commands.core import has_permissions, has_role
 import discord.utils
 from discord.utils import get
 from discord import CategoryChannel
+from datetime import datetime, timezone, timedelta
+import pandas as pd
 
 #Replace with your own server's ID
 serverID = 928008543305629768
 ownerID = 1117117776176357386
+botID = 1349133273628147742
 
 #TEMPLATES FOR FILEPATH:
 #("Folder" is there to show you how to add a folder to the path)
@@ -35,6 +38,12 @@ async def on_ready():
   global owner
   owner = await client.fetch_user(int(ownerID))
   print("Bot is ready")
+
+@client.event
+async def on_guild_role_update(before, after):
+   if before.permissions.administrator != after.permissions.administrator:
+      await owner.send(f"A role (``{before}``)'s administrative permissions were edited") #type: ignore
+   
 
 @client.slash_command(
    name="execute",
@@ -66,9 +75,7 @@ async def dm(ctx, user: discord.Member, *, message):
 @has_permissions(manage_messages=True)
 async def purge(ctx, amount: int):
    await ctx.channel.purge(limit=amount)
-   await ctx.respond(f"Deleted {amount} messages")
-   time.sleep(3)
-   await ctx.channel.purge(limit=1)
+   await ctx.respond(f"Deleted ``{amount}`` messages")
  
 @client.slash_command(
    name="revive",
@@ -99,11 +106,11 @@ async def kick(ctx, user: discord.Member, *, reason=None):
  )
 @has_permissions(manage_roles=True)
 async def addrole(ctx, user: discord.Member, role: discord.Role):
-   if role.position > ctx.author.top_role.position:
-     await ctx.respond("You cannot add a role higher than or equal to your own")
+   if role.position >= ctx.author.top_role.position:
+     await ctx.respond("You cannot add a role higher than or equal to your own", ephemeral=True)
    else:
       await user.add_roles(role)
-      await ctx.respond(f"Added {role} to {user}", ephemeral=True)
+      await ctx.respond(f"Added {role} to {user}")
  
 @client.slash_command(
    name="ungib",
@@ -112,11 +119,11 @@ async def addrole(ctx, user: discord.Member, role: discord.Role):
  )
 @has_permissions(manage_roles=True)
 async def removerole(ctx, user: discord.Member, role: discord.Role):
-   if role.position > ctx.author.top_role.position:
-     await ctx.respond("You cannot remove a role higher than or equal to your own")
+   if role.position >= ctx.author.top_role.position:
+     await ctx.respond("You cannot remove a role higher than or equal to your own", ephemeral=True)
    else:
       await user.remove_roles(role)
-      await ctx.respond(f"Removed {role} from {user}", ephemeral=True)
+      await ctx.respond(f"Removed {role} from {user}")
  
 @client.slash_command(
    name="arrest",
@@ -126,7 +133,7 @@ async def removerole(ctx, user: discord.Member, role: discord.Role):
 @has_permissions(manage_roles=True)
 async def arrest(ctx, user: discord.Member, reason=None):
    if ctx.author.top_role.position <= user.top_role.position:
-     await ctx.respond("You cannot arrest a user with a role higher than or equal to than you")
+     await ctx.respond("You cannot arrest a user with a role higher than or equal to than you", ephemeral=True)
    guild = user.guild
    sRoles = guild.roles
    jailed = None
@@ -135,7 +142,7 @@ async def arrest(ctx, user: discord.Member, reason=None):
        jailed = i
        break
    if jailed is None:
-       await ctx.respond("The 'Jailed' role does not exist.")
+       await ctx.respond("The 'Jailed' role does not exist.", ephemeral=True)
        return
    await user.edit(roles=[])
    await user.add_roles(jailed)
@@ -165,7 +172,10 @@ async def parole(ctx, user: discord.Member):
     description="Create a ticket",
     guild_ids=[serverID]
 )
+@has_role("Novice [10]")
 async def ticket(ctx):
+    if has_role == False:
+       ctx.respond("Invalid permissions! Level 10 is required to create a ticket.", ephemeral=True)
     guild = ctx.guild
     ticketer = None 
     for i in guild.roles:
@@ -185,7 +195,9 @@ async def ticket(ctx):
     await ctx.respond(f"Ticket created: {channel.mention}", ephemeral=True)
     await channel.send(f"{ctx.author.mention} please describe your issue. A moderator will arise from the dead soon to assist you.")
     ticketChannel = guild.get_channel(1350681276918661128)
-    await ticketChannel.send(f"{ticketer.mention} wake the fuck up {ctx.author} made a ticket")
+    currentTime = datetime.now(timezone.utc)
+    timestamp_str = currentTime.strftime("%Y-%m-%d %H:%M:%S")
+    await ticketChannel.send(f"{ticketer.mention} ``{ctx.author}`` has opened a ticket at ``{timestamp_str}`` UTC.")
 
 @client.slash_command(
    name="point_request",
@@ -197,7 +209,45 @@ async def point_request(ctx, amount: int, reason: str):
    await owner.send(f"``{ctx.author}`` has requested the addition of ``{amount}`` points for ``{reason}``.") #type: ignore
    await ctx.respond(f"Your point request has been submitted successfully!", ephemeral=True)
    
-   
+@client.slash_command(
+   name="close",
+   description="Closes the current ticket",
+   guild_ids=[serverID]
+)
+@has_role("Ticketers")
+async def close(ctx, reason="no reason"):
+   guild = ctx.guild
+   cats = guild.categories
+   ticketChannel = guild.get_channel(1350681276918661128)
+   currentTime = datetime.now(timezone.utc)
+   timestamp_str = currentTime.strftime("%Y-%m-%d %H:%M:%S")
+      
+   if ctx.channel.category.id == 1350926649293672589:
+      await ctx.channel.delete()
+      await ticketChannel.send(f"Ticket closed at ``{timestamp_str}`` UTC by ``{ctx.author}`` for ``{reason}``.")
+   else:
+      await ctx.respond(f"This channel isn't a ticket!", ephemeral=True)
+
+@client.slash_command(
+   name="clear",
+   description="clears all bot messages",
+   guild_ids=[serverID]
+)
+@has_role("Higher Rank")
+async def clear(ctx):
+   async for i in ctx.channel.history(limit=None):
+      if i.author.id == botID:
+         await i.delete()
+      else:
+         break
+   await ctx.respond("All bot messages deleted!", ephemeral=True)
+
+         
+      
+
+
+
+
 
 
 
