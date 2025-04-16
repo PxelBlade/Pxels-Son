@@ -19,7 +19,7 @@ serverID = 928008543305629768
 ownerID = 1117117776176357386
 botID = 1349133273628147742
 
-csvWriter = csv.writer(open("C:/Users/charl/pxels-son/points.csv", "a"))
+csvWriter = csv.writer(open("C:/Users/charl/AuthKeys/points.csv", "a"))
 
 #TEMPLATES FOR FILEPATH:
 #("Folder" is there to show you how to add a folder to the path)
@@ -27,7 +27,7 @@ csvWriter = csv.writer(open("C:/Users/charl/pxels-son/points.csv", "a"))
 #Linux & Mac: ~/Folder/token.env
 load_dotenv(dotenv_path="C:/Users/charl/AuthKeys/key.env")
 
-points = pd.read_csv("C:/Users/charl/pxels-son/points.csv")
+points = pd.read_csv("C:/Users/charl/AuthKeys/points.csv")
 
 
 token = os.getenv("TOKEN")
@@ -271,7 +271,7 @@ async def clear(ctx):
 @has_role("Pickle")
 async def add_points(ctx, user: discord.Member, amount: int):
    points.loc[points['ID'] == int(user.id), 'Points'] += amount
-   points.to_csv("C:/Users/charl/pxels-son/points.csv", index=False)
+   points.to_csv("C:/Users/charl/AuthKeys/points.csv", index=False)
    await ctx.respond(f"Added {amount} points to {user}.", ephemeral=True)
    await user.send(f"You have been credited {amount} points for your contributions this month. Keep up the good work!")
    if amount >= 3:
@@ -301,7 +301,7 @@ async def points_check(ctx, user: discord.Member):
 @has_role("Pickle")
 async def rem_points(ctx, user: discord.Member, amount: int, reason=None):
    points.loc[points['ID'] == int(user.id), 'Points'] -= amount
-   points.to_csv("C:/Users/charl/pxels-son/points.csv", index=False)
+   points.to_csv("C:/Users/charl/AuthKeys/points.csv", index=False)
    await ctx.respond(f"Removed {amount} points from {user}.", ephemeral=True)
    await user.send(f"You have been deducted ``{amount}`` points for ``{reason}``.")
 
@@ -318,7 +318,7 @@ async def new_quota(ctx, user: discord.Member):
    points = pd.concat([points, new_entry], ignore_index=True)
    
    # Save the updated DataFrame to the CSV file
-   points.to_csv("C:/Users/charl/pxels-son/points.csv", index=False)
+   points.to_csv("C:/Users/charl/AuthKeys/points.csv", index=False)
    
    await ctx.respond(f"``{user}`` has been added to the quota.", ephemeral=True)
    await user.send(f"You have been added to the quota as part as your initiation as staff. \n In order to remain in position, you must earn 3 points by the end of the month. \n To earn points, you must meet a different criteria depending on your role, which can be found below: \n \n Testers must find three bugs or show up to at least five testing sessions. \n Moderators must do at least 6 tickets (2/point). \n Developers must contribute three things to the game (more info in https://discord.com/channels/928008543305629768/1342277581222711366). Good luck!")
@@ -333,11 +333,52 @@ async def strike(ctx, user: discord.Member, reason: str):
    points.loc[points['ID'] == int(user.id), 'Strikes'] += 1
    user_strikes = points.loc[points['ID'] == int(user.id), 'Strikes'].values[0]
    strikesRemaining = 3 - user_strikes
-   points.to_csv("C:/Users/charl/pxels-son/points.csv", index=False)
+   points.to_csv("C:/Users/charl/AuthKeys/points.csv", index=False)
    await ctx.respond(f"``{user}`` has been striked for ``{reason}``.", ephemeral=True)
    await user.send(f"You have been striked in Find the Blades for ``{reason}``. You have {strikesRemaining} strikes left before demotion.")
 
+@client.slash_command(
+   name="forgive",
+   description="Forgives a staff",
+   guild_ids=[serverID]
+)
+@has_role("Pickle")
+async def forgive(ctx, user: discord.Member):
+   points.loc[points['ID'] == int(user.id), 'Strikes'] -= 1
+   user_strikes = points.loc[points['ID'] == int(user.id), 'Strikes'].values[0]
+   strikesRemaining = 3 - user_strikes
+   points.to_csv("C:/Users/charl/AuthKeys/points.csv", index=False)
+   await ctx.respond(f"``{user}`` has been forgiven. They now have {strikesRemaining} strikes remaining.", ephemeral=True)
+   await user.send(f"You have been forgiven in Find the Blades. You now have {strikesRemaining} strikes remaining.")
 
+@client.slash_command(
+   name="rem_quota",
+   description="Removes a member from quota",
+   guild_ids=[serverID]
+)
+@has_role("Pickle")
+async def rem_quota(ctx, user: discord.Member):
+   # Remove the user from the DataFrame
+   global points
+   points = points[points['ID'] != int(user.id)]
+   
+   # Save the updated DataFrame to the CSV file
+   points.to_csv("C:/Users/charl/AuthKeys/points.csv", index=False)
+   
+   await ctx.respond(f"``{user}`` has been removed from the quota.", ephemeral=True)
+   await user.send(f"You have been removed from the quota.")
+
+@client.slash_command(
+   name="list_quota",
+   description="Lists all members in quota",
+   guild_ids=[serverID]
+)
+@has_role("Pickle")
+async def list_quota(ctx):
+   global points
+   points = pd.read_csv("C:/Users/charl/AuthKeys/points.csv")
+   quota_list = points.to_string(index=False)
+   await ctx.respond(f"``{quota_list}``", ephemeral=True)
 
 
 client.run(token)
