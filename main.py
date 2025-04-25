@@ -98,7 +98,7 @@ async def purge(ctx, amount: int):
 @has_permissions(ban_members=True)
 async def unban(ctx, user: discord.User):
    await ctx.guild.unban(user)
-   await ctx.respond(f"Revived {user}")
+   await ctx.respond(f"Revived {user}.")
  
 @client.slash_command(
    name="exile",
@@ -329,6 +329,7 @@ async def new_quota(ctx, user: discord.Member):
    guild_ids=[serverID]
 )
 @has_role("Pickle")
+@has_role("Server Manager")
 async def strike(ctx, user: discord.Member, reason: str):
    points.loc[points['ID'] == int(user.id), 'Strikes'] += 1
    user_strikes = points.loc[points['ID'] == int(user.id), 'Strikes'].values[0]
@@ -373,12 +374,21 @@ async def rem_quota(ctx, user: discord.Member):
    description="Lists all members in quota",
    guild_ids=[serverID]
 )
-@has_role("Pickle")
-async def list_quota(ctx):
+@has_role("Higher Rank")
+async def list_quota(ctx, ephemeral: bool = True):
    global points
    points = pd.read_csv("C:/Users/charl/AuthKeys/points.csv")
    quota_list = points.to_string(index=False)
-   await ctx.respond(f"``{quota_list}``", ephemeral=True)
+   await ctx.respond(f"``{quota_list}``", ephemeral=ephemeral)
 
+@client.slash_command(
+   name="executie",
+   description="Fake bans a user",
+   guild_ids=[serverID]
+)
+@has_permissions(ban_members=True)
+async def executie(ctx, user: discord.Member):
+   await user.send(f"You have been banned from Find the Blades for ``you got trolled``.")
+   await ctx.respond(f"{user} has been executed.")
 
 client.run(token)
