@@ -19,15 +19,15 @@ serverID = 928008543305629768
 ownerID = 1117117776176357386
 botID = 1349133273628147742
 
-csvWriter = csv.writer(open("C:/Users/charl/AuthKeys/points.csv", "a"))
+csvWriter = csv.writer(open("C:/Users/charl/OneDrive/PC backups/5-16-25 (server)/DCBot/BOT_DATA/PXELS_SON/points.csv", "a"))
 
 #TEMPLATES FOR FILEPATH:
 #("Folder" is there to show you how to add a folder to the path)
 #Windows: C:\Folder\token.env
 #Linux & Mac: ~/Folder/token.env
-load_dotenv(dotenv_path="C:/Users/charl/AuthKeys/key.env")
+load_dotenv(dotenv_path="C:/Users/charl/OneDrive/PC backups/5-16-25 (server)/DCBot/BOT_DATA/PXELS_SON/token.env")
 
-points = pd.read_csv("C:/Users/charl/AuthKeys/points.csv")
+points = pd.read_csv("C:/Users/charl/OneDrive/PC backups/5-16-25 (server)/DCBot/BOT_DATA/PXELS_SON/points.csv")
 
 
 token = os.getenv("TOKEN")
@@ -35,7 +35,7 @@ if token:
   print("Token found")
 
 intents = discord.Intents.all()
-client = commands.Bot(intents=intents)
+client = commands.Bot(intents=intents, command_prefix="$")
 
 owner = None
 
@@ -271,7 +271,7 @@ async def clear(ctx):
 @has_role("Pickle")
 async def add_points(ctx, user: discord.Member, amount: int):
    points.loc[points['ID'] == int(user.id), 'Points'] += amount
-   points.to_csv("C:/Users/charl/AuthKeys/points.csv", index=False)
+   points.to_csv("C:/Users/charl/OneDrive/PC backups/5-16-25 (server)/DCBot/BOT_DATA/PXELS_SON/points.csv", index=False)
    await ctx.respond(f"Added {amount} points to {user}.", ephemeral=True)
    await user.send(f"You have been credited {amount} points for your contributions this month. Keep up the good work!")
    if amount >= 3:
@@ -301,7 +301,7 @@ async def points_check(ctx, user: discord.Member):
 @has_role("Pickle")
 async def rem_points(ctx, user: discord.Member, amount: int, reason=None):
    points.loc[points['ID'] == int(user.id), 'Points'] -= amount
-   points.to_csv("C:/Users/charl/AuthKeys/points.csv", index=False)
+   points.to_csv("C:/Users/charl/OneDrive/PC backups/5-16-25 (server)/DCBot/BOT_DATA/PXELS_SON/points.csv", index=False)
    await ctx.respond(f"Removed {amount} points from {user}.", ephemeral=True)
    await user.send(f"You have been deducted ``{amount}`` points for ``{reason}``.")
 
@@ -318,8 +318,8 @@ async def new_quota(ctx, user: discord.Member):
    points = pd.concat([points, new_entry], ignore_index=True)
    
    # Save the updated DataFrame to the CSV file
-   points.to_csv("C:/Users/charl/AuthKeys/points.csv", index=False)
-   
+   points.to_csv("C:/Users/charl/OneDrive/PC backups/5-16-25 (server)/DCBot/BOT_DATA/PXELS_SON/points.csv", index=False)
+
    await ctx.respond(f"``{user}`` has been added to the quota.", ephemeral=True)
    await user.send(f"You have been added to the quota as part as your initiation as staff. \n In order to remain in position, you must earn 3 points by the end of the month. \n To earn points, you must meet a different criteria depending on your role, which can be found below: \n \n Testers must find three bugs or show up to at least five testing sessions. \n Moderators must do at least 6 tickets (2/point). \n Developers must contribute three things to the game (more info in https://discord.com/channels/928008543305629768/1342277581222711366). Good luck!")
 
@@ -334,7 +334,7 @@ async def strike(ctx, user: discord.Member, reason: str):
    points.loc[points['ID'] == int(user.id), 'Strikes'] += 1
    user_strikes = points.loc[points['ID'] == int(user.id), 'Strikes'].values[0]
    strikesRemaining = 3 - user_strikes
-   points.to_csv("C:/Users/charl/AuthKeys/points.csv", index=False)
+   points.to_csv("C:/Users/charl/OneDrive/PC backups/5-16-25 (server)/DCBot/BOT_DATA/PXELS_SON/points.csv", index=False)
    await ctx.respond(f"``{user}`` has been striked for ``{reason}``.", ephemeral=True)
    await user.send(f"You have been striked in Find the Blades for ``{reason}``. You have {strikesRemaining} strikes left before demotion.")
 
@@ -348,7 +348,7 @@ async def forgive(ctx, user: discord.Member):
    points.loc[points['ID'] == int(user.id), 'Strikes'] -= 1
    user_strikes = points.loc[points['ID'] == int(user.id), 'Strikes'].values[0]
    strikesRemaining = 3 - user_strikes
-   points.to_csv("C:/Users/charl/AuthKeys/points.csv", index=False)
+   points.to_csv("C:/Users/charl/OneDrive/PC backups/5-16-25 (server)/DCBot/BOT_DATA/PXELS_SON/points.csv", index=False)
    await ctx.respond(f"``{user}`` has been forgiven. They now have {strikesRemaining} strikes remaining.", ephemeral=True)
    await user.send(f"You have been forgiven in Find the Blades. You now have {strikesRemaining} strikes remaining.")
 
@@ -364,7 +364,7 @@ async def rem_quota(ctx, user: discord.Member):
    points = points[points['ID'] != int(user.id)]
    
    # Save the updated DataFrame to the CSV file
-   points.to_csv("C:/Users/charl/AuthKeys/points.csv", index=False)
+   points.to_csv("C:/Users/charl/OneDrive/PC backups/5-16-25 (server)/DCBot/BOT_DATA/PXELS_SON/points.csv", index=False)
    
    await ctx.respond(f"``{user}`` has been removed from the quota.", ephemeral=True)
    await user.send(f"You have been removed from the quota.")
@@ -377,18 +377,26 @@ async def rem_quota(ctx, user: discord.Member):
 @has_role("Higher Rank")
 async def list_quota(ctx, ephemeral: bool = True):
    global points
-   points = pd.read_csv("C:/Users/charl/AuthKeys/points.csv")
+   points = pd.read_csv("C:/Users/charl/OneDrive/PC backups/5-16-25 (server)/DCBot/BOT_DATA/PXELS_SON/points.csv")
    quota_list = points.to_string(index=False)
    await ctx.respond(f"``{quota_list}``", ephemeral=ephemeral)
 
 @client.slash_command(
-   name="executie",
-   description="Fake bans a user",
+   name="quota_reset",
+   description="Resets the quota for all members",
    guild_ids=[serverID]
 )
-@has_permissions(ban_members=True)
-async def executie(ctx, user: discord.Member):
-   await user.send(f"You have been banned from Find the Blades for ``you got trolled``.")
-   await ctx.respond(f"{user} has been executed.")
+@has_role("Pickle")
+async def quota_reset(ctx):
+   global points
+   developerRole = discord.utils.get(ctx.guild.roles, name="Developers")
+   points = pd.read_csv("C:/Users/charl/OneDrive/PC backups/5-16-25 (server)/DCBot/BOT_DATA/PXELS_SON/points.csv")
+   points['Points'] = 0
+   points.to_csv("C:/Users/charl/OneDrive/PC backups/5-16-25 (server)/DCBot/BOT_DATA/PXELS_SON/points.csv", index=False)
+   await ctx.respond("All quotas have been reset.", ephemeral=True)
+   if developerRole is not None:
+      await ctx.send(f"{developerRole.mention} UWA UWA ITS THE FIRST OF THE MONTH (new quota)")
+   else:
+      await ctx.send("UWA UWA ITS THE FIRST OF THE MONTH (new quota) (Developers role not found)")
 
 client.run(token)
