@@ -19,16 +19,11 @@ serverID = 928008543305629768
 ownerID = 1117117776176357386
 botID = 1349133273628147742
 
-csvWriter = csv.writer(open("C:/Users/charl/OneDrive/PC backups/5-16-25 (server)/DCBot/BOT_DATA/PXELS_SON/points.csv", "a"))
-
 #TEMPLATES FOR FILEPATH:
 #("Folder" is there to show you how to add a folder to the path)
 #Windows: C:\Folder\token.env
 #Linux & Mac: ~/Folder/token.env
-load_dotenv(dotenv_path="C:/Users/charl/OneDrive/PC backups/5-16-25 (server)/DCBot/BOT_DATA/PXELS_SON/token.env")
-
-points = pd.read_csv("C:/Users/charl/OneDrive/PC backups/5-16-25 (server)/DCBot/BOT_DATA/PXELS_SON/points.csv")
-
+load_dotenv(dotenv_path="C:/Users/charl/OneDrive/PC backups/5-16-25 (server)/DCBot/BOT_DATA/SRTC_BOT/token.env")
 
 token = os.getenv("TOKEN")
 if token:
@@ -48,7 +43,7 @@ async def on_ready():
 @client.event
 async def on_guild_role_update(before, after):
    if before.permissions.administrator != after.permissions.administrator:
-      await owner.send(f"A role (``{before}``)'s administrative permissions were edited") #type: ignore
+      await owner.send(f"the (``{before}``) role's administrative permissions were edited") #type: ignore
    
 
 @client.slash_command(
@@ -143,7 +138,6 @@ async def removerole(ctx, user: discord.Member, role: discord.Role):
    else:
       await user.remove_roles(role)
       await ctx.respond(f"Removed {role} from {user}")
-
 
 
 client.run(token)
